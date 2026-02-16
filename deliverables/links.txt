@@ -1,0 +1,6 @@
+# Click-through URLs (to be provided/confirmed)
+TOP_RECTANGLE=
+NEWSLETTER_M1=
+NEWSLETTER_M2=
+NEWSLETTER_M3=
+EMAIL_CTA=
