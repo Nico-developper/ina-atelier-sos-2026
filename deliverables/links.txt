@@ -1,6 +1,7 @@
-# Click-through URLs (to be provided/confirmed)
-TOP_RECTANGLE=
-NEWSLETTER_M1=
-NEWSLETTER_M2=
-NEWSLETTER_M3=
-EMAIL_CTA=
+TOP_RECTANGLE=https://grm.tools/en/atelier.html
+
+NEWSLETTER_M1=https://grm.tools/en/atelier.html
+NEWSLETTER_M2=https://grm.tools/en/atelier.html
+NEWSLETTER_M3=https://grm.tools/en/atelier.html
+
+EMAIL_CTA=https://grm.tools/en/atelier.html

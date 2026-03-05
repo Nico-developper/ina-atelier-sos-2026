@@ -1,6 +1,5 @@
-# ALT texts
+top-rectangle-V4.gif=ATELIER — Patch. Play. Discover. A modular sandbox for endless sonic ideas.
 
-NEWSLETTER_M1=
-NEWSLETTER_M2=
-NEWSLETTER_M3=
-EMAIL_HERO_IMAGE=
+Newsletter-V4-01.jpg=ATELIER — Patch. Play. Discover. Discover Atelier.
+Newsletter-V4-02.jpg=ATELIER — Polyadic modulation and multichannel capabilities. Explore the features.
+Newsletter-V4-03.jpg=ATELIER — Available as standalone application and DAW plug-in. Learn more.

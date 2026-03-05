@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="ad.size" content="width=300,height=250" />
+    <title>ATELIER – GRM Tools 300×250</title>
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html, body {
+        width: 300px;
+        height: 250px;
+        overflow: hidden;
+        background: #141616;
+      }
+
+      /* ── Conteneur ───────────────────────────────────── */
+      .ad {
+        position: relative;
+        width: 300px;
+        height: 250px;
+        overflow: hidden;
+        cursor: pointer;
+        background: #141616;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #fff;
+      }
+
+      /* ── Calques de fond par frame ───────────────────── */
+      /*
+        Ordre d'empilement par frame (z-index croissant) :
+          1. onde      (texture bg, couvre tout)
+          2. fond      (screenshot produit, couvre tout)
+          3. frame     (texte + UI par-dessus)
+          4. logos     (header persistant, tout en haut)
+      */
+
+      .layer {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+      }
+
+      /* ── Logos header persistants ─────────────────────── */
+      .logos {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 158px;
+        z-index: 30;
+        opacity: 0;
+      }
+
+      /* ── Frames texte ─────────────────────────────────── */
+      .frame {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        z-index: 20;
+      }
+
+      /* ── Contenu Frame 1 ─────────────────────────────── */
+      .f1-body {
+        position: absolute;
+        top: 44px;
+        left: 14px;
+      }
+      .f1-title {
+        font-size: 34px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        line-height: 1;
+        margin-bottom: 9px;
+      }
+      .f1-tagline {
+        color: #4a9cb8;
+        font-weight: 700;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+      .f1-box {
+        position: absolute;
+        bottom: 16px;
+        left: 14px;
+        right: 14px;
+        padding: 9px 12px;
+        border: 1.5px solid rgba(255,255,255,0.6);
+        font-size: 13.5px;
+        font-weight: 700;
+        line-height: 1.4;
+        text-align: center;
+        background: rgba(10,12,12,0.4);
+      }
+
+      /* ── Contenu Frame 2 ─────────────────────────────── */
+      .f2-body {
+        position: absolute;
+        top: 44px;
+        left: 14px;
+        right: 14px;
+      }
+      .f2-title {
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        margin-bottom: 13px;
+      }
+      .f2-sub {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        color: #4a9cb8;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .f2-text {
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.65;
+        color: #e8e8e8;
+      }
+      .f2-formats {
+        margin-top: 11px;
+        font-size: 12px;
+        color: #4a9cb8;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        line-height: 1.6;
+      }
+
+      /* ── Contenu Frame 3 ─────────────────────────────── */
+      .f3-body {
+        position: absolute;
+        top: 44px;
+        left: 14px;
+        right: 14px;
+      }
+      .f3-title {
+        font-size: 27px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        margin-bottom: 10px;
+      }
+      .f3-sub {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        color: #4a9cb8;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .f3-list {
+        list-style: none;
+        padding: 0;
+      }
+      .f3-list li {
+        font-size: 11.5px;
+        font-weight: 700;
+        line-height: 1.65;
+        color: #e0e0e0;
+        padding-left: 11px;
+        position: relative;
+      }
+      .f3-list li::before {
+        content: '›';
+        position: absolute;
+        left: 0;
+        color: #4a9cb8;
+      }
+
+      /* ── Bordure ─────────────────────────────────────── */
+      .border {
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(74,156,184,0.35);
+        z-index: 40;
+        pointer-events: none;
+      }
+
+      /* ════════════════════════════════════════════════════
+         TIMINGS  –  cycle 15 s
+           F1 :  0 → 5 s   (visible  0.4 → 4.6 s)
+           F2 :  5 → 10 s  (visible  5.4 → 9.6 s)
+           F3 : 10 → 15 s  (visible 10.4 → 14.6 s)
+
+         Pourcentages (sur 15 s) :
+           5 s  = 33.33 %
+           10 s = 66.67 %
+           fade = 0.4 s = 2.67 %
+         ════════════════════════════════════════════════════ */
+
+      /* --- Logos : apparition unique au démarrage -------- */
+      .ad.ready .logos {
+        animation: show-logos 0.5s ease-out 0.15s forwards;
+      }
+      @keyframes show-logos {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+
+      /* --- Onde frame 1  (03-onde-frame-1.jpg) ----------- */
+      .ad.ready .onde-f1 {
+        animation: cy-f1 15s linear infinite;
+      }
+      /* --- Fond frame 1  (01-fond-frame-1.png) ----------- */
+      .ad.ready .fond-f1 {
+        animation: cy-f1 15s linear infinite;
+      }
+      /* --- Texte frame 1 --------------------------------- */
+      .ad.ready .frame-f1 {
+        animation: cy-f1 15s linear infinite;
+      }
+
+      @keyframes cy-f1 {
+        0%      { opacity: 0; }
+        2.67%   { opacity: 1; }   /* +0.4s */
+        30.67%  { opacity: 1; }   /* 4.6s  */
+        33.33%  { opacity: 0; }   /* 5s    */
+        100%    { opacity: 0; }
+      }
+
+      /* --- Onde frame 2  (05-onde-frame-2.jpg) ----------- */
+      .ad.ready .onde-f2 {
+        animation: cy-f2 15s linear infinite;
+      }
+      /* --- Fond frame 2  (04-fond-frame-2.png) ----------- */
+      .ad.ready .fond-f2 {
+        animation: cy-f2 15s linear infinite;
+      }
+      /* --- Texte frame 2 --------------------------------- */
+      .ad.ready .frame-f2 {
+        animation: cy-f2 15s linear infinite;
+      }
+
+      @keyframes cy-f2 {
+        0%      { opacity: 0; }
+        33.33%  { opacity: 0; }   /* 5s    */
+        36%     { opacity: 1; }   /* 5.4s  */
+        64%     { opacity: 1; }   /* 9.6s  */
+        66.67%  { opacity: 0; }   /* 10s   */
+        100%    { opacity: 0; }
+      }
+
+      /* --- Onde frame 3  (07-onde-frame-3.jpg) ----------- */
+      .ad.ready .onde-f3 {
+        animation: cy-f3 15s linear infinite;
+      }
+      /* --- Fond frame 3  (06-fond-frame-3.jpg) ----------- */
+      .ad.ready .fond-f3 {
+        animation: cy-f3 15s linear infinite;
+      }
+      /* --- Texte frame 3 --------------------------------- */
+      .ad.ready .frame-f3 {
+        animation: cy-f3 15s linear infinite;
+      }
+
+      @keyframes cy-f3 {
+        0%      { opacity: 0; }
+        66.67%  { opacity: 0; }   /* 10s   */
+        69.33%  { opacity: 1; }   /* 10.4s */
+        97.33%  { opacity: 1; }   /* 14.6s */
+        100%    { opacity: 0; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="ad" id="ad">
+
+      <!-- ══ FRAME 1 ══════════════════════════════════════
+           Calque 1 : onde     → 03-onde-frame-1.jpg
+           Calque 2 : fond     → 01-fond-frame-1.png
+           Calque 3 : texte    → frame-f1
+      ═══════════════════════════════════════════════════ -->
+      <div class="layer onde-f1"
+           style="background-image: url('assets/03-onde-frame-1.jpg'); z-index:2;"></div>
+      <div class="layer fond-f1"
+           style="background-image: url('assets/01-fond-frame-1.png'); z-index:3;"></div>
+
+      <div class="frame frame-f1">
+        <div class="f1-body">
+          <div class="f1-title">ATELIER</div>
+          <div class="f1-tagline">Patch.<br>Play.<br>Discover.</div>
+        </div>
+        <div class="f1-box">
+          A modular sandbox<br>for endless sonic ideas.
+        </div>
+      </div>
+
+      <!-- ══ FRAME 2 ══════════════════════════════════════
+           Calque 1 : onde     → 05-onde-frame-2.jpg
+           Calque 2 : fond     → 04-fond-frame-2.png
+           Calque 3 : texte    → frame-f2
+      ═══════════════════════════════════════════════════ -->
+      <div class="layer onde-f2"
+           style="background-image: url('assets/05-onde-frame-2.jpg'); z-index:4;"></div>
+      <div class="layer fond-f2"
+           style="background-image: url('assets/04-fond-frame-2.png'); z-index:5;"></div>
+
+      <div class="frame frame-f2">
+        <div class="f2-body">
+          <div class="f2-title">ATELIER</div>
+          <div class="f2-sub">Standalone + Plug-in for DAWs</div>
+          <div class="f2-text">
+            Modules: Processors + Modulators<br>
+            Freely chainable
+          </div>
+          <div class="f2-formats">
+            VST3 &nbsp;/&nbsp; AUv2 &nbsp;/&nbsp; AAX<br>
+            macOS &nbsp;—&nbsp; Windows
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ FRAME 3 ══════════════════════════════════════
+           Calque 1 : onde     → 07-onde-frame-3.jpg
+           Calque 2 : fond     → 06-fond-frame-3.jpg
+           Calque 3 : texte    → frame-f3
+      ═══════════════════════════════════════════════════ -->
+      <div class="layer onde-f3"
+           style="background-image: url('assets/07-onde-frame-3.jpg'); z-index:6;"></div>
+      <div class="layer fond-f3"
+           style="background-image: url('assets/06-fond-frame-3.jpg'); z-index:7;"></div>
+
+      <div class="frame frame-f3">
+        <div class="f3-body">
+          <div class="f3-title">ATELIER</div>
+          <div class="f3-sub">5 Key Features</div>
+          <ul class="f3-list">
+            <li>Polyadic Modulation</li>
+            <li>Multichannel (stereo → 64+)</li>
+            <li>Simple, deep modules</li>
+            <li>Hybrid workflow</li>
+            <li>Parameter morphing</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══ LOGOS (persistent, z-index max) ══════════════
+           02-header-logos-frame-1.png
+      ═══════════════════════════════════════════════════ -->
+      <img src="assets/02-header-logos-frame-1.png"
+           class="logos"
+           alt="INA GRM Tools | Atelier" />
+
+      <!-- Bordure décorative -->
+      <div class="border"></div>
+
+    </div><!-- /.ad -->
+
+    <script>
+      var clickTag = window.clickTag || "https://grm.tools/en/atelier.html";
+      window.onload = function () {
+        var ad = document.getElementById("ad");
+        ad.classList.add("ready");
+        ad.addEventListener("click", function () {
+          window.open(clickTag, "_blank");
+        });
+      };
+    </script>
+  </body>
+</html>

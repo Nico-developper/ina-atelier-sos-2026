@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Test — Frame 3 List Reveal</title>
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                background: #141616;
+            }
+
+            .ad {
+                position: relative;
+                width: 300px;
+                height: 250px;
+                overflow: hidden;
+                background: #141616 url("assets-source/hero-600.jpg")
+                    center/cover no-repeat;
+                font-family: Arial, Helvetica, sans-serif;
+                color: #fff;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            .shade {
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(
+                    ellipse at 70% 40%,
+                    rgba(0, 0, 0, 0.35) 0%,
+                    rgba(0, 0, 0, 0.75) 60%,
+                    rgba(0, 0, 0, 0.85) 100%
+                );
+                pointer-events: none;
+            }
+
+            .logos {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 145px;
+                height: auto;
+            }
+
+            .title {
+                position: absolute;
+                top: 52px;
+                left: 88px;
+                font-weight: 800;
+                font-size: 32px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                line-height: 1;
+            }
+
+            .content {
+                position: absolute;
+                left: 18px;
+                right: 18px;
+                top: 92px;
+                font-weight: 800;
+                font-size: 13px;
+                line-height: 1.25;
+            }
+
+            .kftitle {
+                display: inline-block;
+                margin-bottom: 6px;
+            }
+
+            /* Liste + animation "déroulante" */
+            .list {
+                margin: 0;
+                padding-left: 16px;
+                list-style: disc;
+            }
+
+            .list li {
+                margin: 4px 0;
+                opacity: 0;
+                transform: translateY(-6px);
+                filter: blur(1px);
+                will-change: opacity, transform, filter;
+            }
+
+            /* Stagger: 5 items */
+            .ad.play .list li:nth-child(1) {
+                animation: itemIn 600ms ease forwards;
+                animation-delay: 250ms;
+            }
+            .ad.play .list li:nth-child(2) {
+                animation: itemIn 600ms ease forwards;
+                animation-delay: 450ms;
+            }
+            .ad.play .list li:nth-child(3) {
+                animation: itemIn 600ms ease forwards;
+                animation-delay: 650ms;
+            }
+            .ad.play .list li:nth-child(4) {
+                animation: itemIn 600ms ease forwards;
+                animation-delay: 850ms;
+            }
+            .ad.play .list li:nth-child(5) {
+                animation: itemIn 600ms ease forwards;
+                animation-delay: 1050ms;
+            }
+
+            @keyframes itemIn {
+                0% {
+                    opacity: 0;
+                    transform: translateY(-6px);
+                    filter: blur(1px);
+                }
+                60% {
+                    opacity: 1;
+                    transform: translateY(1px);
+                    filter: blur(0);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                    filter: blur(0);
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="ad" id="ad">
+            <img
+                class="logos"
+                src="assets-source/header-logos.png"
+                alt="INA GRM Tools"
+            />
+            <div class="shade" aria-hidden="true"></div>
+
+            <div class="title">ATELIER</div>
+
+            <div class="content">
+                <span class="kftitle">5 Key Features</span>
+                <ul class="list">
+                    <li>Polyadic Modulation</li>
+                    <li>Multichannel (stereo → 64+)</li>
+                    <li>Simple, deep modules</li>
+                    <li>Hybrid workflow</li>
+                    <li>Parameter morphing</li>
+                </ul>
+            </div>
+        </div>
+
+        <script>
+            // Lance l'animation après chargement des images (évite flash)
+            (function () {
+                var ad = document.getElementById("ad");
+
+                function preload(src) {
+                    return new Promise(function (resolve) {
+                        var img = new Image();
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                        img.src = src;
+                    });
+                }
+
+                Promise.all([
+                    preload("assets-source/hero-600.jpg"),
+                    preload("assets-source/header-logos.png"),
+                ]).then(function () {
+                    // reset si besoin
+                    ad.classList.remove("play");
+                    // léger délai pour laisser le DOM peindre
+                    setTimeout(function () {
+                        ad.classList.add("play");
+                    }, 60);
+                });
+            })();
+        </script>
+    </body>
+</html>

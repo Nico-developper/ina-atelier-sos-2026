@@ -21,7 +21,6 @@ Projet : création de 3 livrables publicitaires pour la campagne media ATELIER (
 ## Structure du repo
 
 - `docs/` : brief + specs + checklist QA
-- `sources/` : copy + assets (images, branding)
 - `production/` : fichiers de travail (bannières, email)
 - `deliverables/` : exports finaux prêts à livrer
 
